@@ -1,5 +1,5 @@
 module.exports = {
   url: "mongodb://localhost:27017/",
-  database: "bezkoder_files_db",
+  database: "football-bet",
   imgBucket: "photos",
 };
