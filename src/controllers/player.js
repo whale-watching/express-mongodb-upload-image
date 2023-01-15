@@ -97,12 +97,23 @@ const deletePlayer = async (req, res) => {
 const updatePlayer = async (req, res) => {
   try {
     const { id } = req.params;
-    const { code } = req.body;
-    await Player.findByIdAndUpdate(id, {
-      code,
-    });
+    const { code, name } = req.body;
 
-    return res.status(200).send({message: "Successfully deleted!"});
+    if (req.files.length <= 0) {
+      await Player.findByIdAndUpdate(id, {
+        name,
+        code,
+      });
+    } else {
+      await upload(req, res);
+      const imageName = req.files[0].filename;
+      await Player.findByIdAndUpdate(id, {
+        image: imageName,
+      });
+    }
+    return res.status(200).send({ 
+      message: "Successfully deleted!" 
+    });
   } catch (error) {
     return res.status(500).send({
       message: error.message,
