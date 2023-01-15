@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const homeController = require("../controllers/home");
 const uploadController = require("../controllers/upload");
+const playerController = require("../controllers/player");
 
 let routes = app => {
   router.get("/", homeController.getHome);
@@ -9,6 +10,12 @@ let routes = app => {
   router.post("/upload", uploadController.uploadFiles);
   router.get("/files", uploadController.getListFiles);
   router.get("/files/:name", uploadController.download);
+
+  router.post("/player", playerController.create);
+  router.get("/player/all", playerController.getAll);
+  // router.get("/player/:id", playerController.get);
+  // router.patch("/player/:id", playerController.update);
+  // router.patch("/player/:id", playerController.delete);
 
   return app.use("/", router);
 };
