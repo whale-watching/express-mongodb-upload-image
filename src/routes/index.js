@@ -13,9 +13,9 @@ let routes = app => {
 
   router.post("/player", playerController.create);
   router.get("/player/all", playerController.getAll);
-  // router.get("/player/:id", playerController.get);
-  // router.patch("/player/:id", playerController.update);
-  // router.patch("/player/:id", playerController.delete);
+  router.get("/player/:id", playerController.get);
+  router.patch("/player/:id", playerController.updatePlayer);
+  router.delete("/player/:id", playerController.deletePlayer);
 
   return app.use("/", router);
 };

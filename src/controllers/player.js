@@ -56,28 +56,11 @@ const create = async (req, res) => {
   }
 };
 
-const getListFiles = async (req, res) => {
+const getAll = async (_, res) => {
   try {
-    const database = mongoClient.db(dbConfig.database);
-    const images = database.collection(dbConfig.imgBucket + ".files");
+    const allPlayers = await Player.find();
 
-    const cursor = images.find({});
-
-    if ((await cursor.count()) === 0) {
-      return res.status(500).send({
-        message: "No files found!",
-      });
-    }
-
-    let fileInfos = [];
-    await cursor.forEach((doc) => {
-      fileInfos.push({
-        name: doc.filename,
-        url: baseUrl + doc.filename,
-      });
-    });
-
-    return res.status(200).send(fileInfos);
+    return res.status(200).send(allPlayers);
   } catch (error) {
     return res.status(500).send({
       message: error.message,
@@ -85,26 +68,41 @@ const getListFiles = async (req, res) => {
   }
 };
 
-const download = async (req, res) => {
+const get = async (req, res) => {
   try {
-    const database = mongoClient.db(dbConfig.database);
-    const bucket = new GridFSBucket(database, {
-      bucketName: dbConfig.imgBucket,
+    const { id } = req.params;
+    const player = await Player.findById(id);
+
+    return res.status(200).send(player);
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message,
+    });
+  }
+};
+
+const deletePlayer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Player.findByIdAndRemove(id);
+
+    return res.status(200).send({message: "Successfully deleted!"});
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message,
+    });
+  }
+};
+
+const updatePlayer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code } = req.body;
+    await Player.findByIdAndUpdate(id, {
+      code,
     });
 
-    let downloadStream = bucket.openDownloadStreamByName(req.params.name);
-
-    downloadStream.on("data", function (data) {
-      return res.status(200).write(data);
-    });
-
-    downloadStream.on("error", function (err) {
-      return res.status(404).send({ message: "Cannot download the Image!" });
-    });
-
-    downloadStream.on("end", () => {
-      return res.end();
-    });
+    return res.status(200).send({message: "Successfully deleted!"});
   } catch (error) {
     return res.status(500).send({
       message: error.message,
@@ -114,6 +112,8 @@ const download = async (req, res) => {
 
 module.exports = {
   create,
-  getListFiles,
-  download,
+  getAll,
+  get,
+  deletePlayer,
+  updatePlayer,
 };
